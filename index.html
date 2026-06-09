@@ -58,33 +58,41 @@
       font-size:14px;
     }
 
-    .auth-bar{
+    .share-bar{
       display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:10px;
       flex-wrap:wrap;
-      margin-top:14px;
-    }
-
-    .user-chip{
-      display:flex;
-      align-items:center;
       gap:10px;
-      padding:10px 12px;
+      align-items:center;
+      justify-content:space-between;
+      margin-top:14px;
+      padding:12px;
       background:rgba(255,255,255,0.82);
       border:1px solid #f0d3dd;
-      border-radius:999px;
-      min-height:44px;
+      border-radius:18px;
     }
 
-    .avatar{
-      width:32px;
-      height:32px;
-      border-radius:50%;
-      object-fit:cover;
-      background:#fff;
-      border:1px solid #eed7df;
+    .share-info{
+      min-width:0;
+      flex:1;
+    }
+
+    .share-info .label{
+      font-size:12px;
+      color:var(--muted);
+      margin-bottom:4px;
+    }
+
+    .share-info .value{
+      font-size:14px;
+      font-weight:700;
+      color:#6b4d59;
+      word-break:break-all;
+    }
+
+    .share-actions{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
     }
 
     .btn{
@@ -364,23 +372,6 @@
       margin-top:8px;
     }
 
-    .empty-state{
-      background:#fff;
-      border:1px dashed #efcad8;
-      padding:22px;
-      border-radius:18px;
-      text-align:center;
-      color:#7d5f6d;
-      box-shadow:var(--shadow);
-    }
-
-    .sub-actions{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      margin-top:10px;
-    }
-
     @media (max-width:640px){
       body{ padding:12px; }
       .quick-summary,
@@ -390,6 +381,7 @@
         grid-template-columns:1fr;
       }
       .date-title{ font-size:18px; }
+      .share-bar{ align-items:flex-start; }
     }
   </style>
 </head>
@@ -397,17 +389,17 @@
   <div class="app">
     <div class="hero">
       <h1>🌸 Amber’s Daily Reset</h1>
-      <p>6/9 ～ 7/1 減脂同步版｜Google 登入、Realtime Database、手機 / 電腦同步。</p>
+      <p>網址同步版｜不用登入，只要打開同一個網址（同一個 <code>?id=</code>）就會同步。</p>
 
-      <div class="auth-bar">
-        <div class="user-chip">
-          <img class="avatar" id="userAvatar" alt="avatar" />
-          <div id="userText">尚未登入</div>
+      <div class="share-bar">
+        <div class="share-info">
+          <div class="label">目前同步 ID</div>
+          <div class="value" id="shareIdText">loading...</div>
         </div>
 
-        <div class="sub-actions">
-          <button class="btn primary" id="loginBtn">Google 登入</button>
-          <button class="btn" id="logoutBtn" style="display:none;">登出</button>
+        <div class="share-actions">
+          <button class="btn" id="copyLinkBtn">複製同步網址</button>
+          <button class="btn primary" id="changeIdBtn">更換同步 ID</button>
         </div>
       </div>
 
@@ -427,28 +419,15 @@
       </div>
 
       <div class="status" id="statusBox">
-        請先登入 Google，登入後資料會同步到 Realtime Database。
+        正在連線到 Realtime Database…
       </div>
     </div>
 
-    <div id="container">
-      <div class="empty-state">
-        <h3 style="margin-top:0;">先登入才能開始同步</h3>
-        <p>登入後，勾選、飲食內容與熱量會保存到雲端。</p>
-      </div>
-    </div>
+    <div id="container"></div>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
-    import {
-      getAuth,
-      GoogleAuthProvider,
-      signInWithPopup,
-      signOut,
-      onAuthStateChanged
-    } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
-
     import {
       getDatabase,
       ref,
@@ -468,27 +447,51 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
     const db = getDatabase(app, firebaseConfig.databaseURL);
-    const provider = new GoogleAuthProvider();
-    provider.setCustomParameters({ prompt: "select_account" });
 
     const startDate = new Date("2026-06-09");
     const endDate = new Date("2026-07-01");
     const weekdayMap = ["日","一","二","三","四","五","六"];
     const todayStr = new Date().toISOString().split("T")[0];
 
-    let currentUser = null;
     let recordsStore = {};
     let unsubscribeRecords = null;
     const saveTimers = {};
 
-    const loginBtn = document.getElementById("loginBtn");
-    const logoutBtn = document.getElementById("logoutBtn");
-    const userText = document.getElementById("userText");
-    const userAvatar = document.getElementById("userAvatar");
     const container = document.getElementById("container");
     const statusBox = document.getElementById("statusBox");
+    const todayCompletionEl = document.getElementById("todayCompletion");
+    const todayIntakeEl = document.getElementById("todayIntake");
+    const todayNetEl = document.getElementById("todayNet");
+    const shareIdTextEl = document.getElementById("shareIdText");
+    const copyLinkBtn = document.getElementById("copyLinkBtn");
+    const changeIdBtn = document.getElementById("changeIdBtn");
+
+    function sanitizeId(raw) {
+      const cleaned = String(raw || "")
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, "-")
+        .replace(/[^a-z0-9_-]/g, "");
+      return cleaned || "amber";
+    }
+
+    function getShareId() {
+      const params = new URLSearchParams(window.location.search);
+      return sanitizeId(params.get("id") || "amber");
+    }
+
+    let shareId = getShareId();
+
+    function getShareUrl() {
+      const url = new URL(window.location.href);
+      url.searchParams.set("id", shareId);
+      return url.toString();
+    }
+
+    function updateShareUi() {
+      shareIdTextEl.textContent = shareId;
+    }
 
     function getSchedule(day) {
       switch(day) {
@@ -619,23 +622,12 @@
       const todayData = getDateData(todayStr);
       const completion = calcCompletion(todayStr);
 
-      document.getElementById("todayCompletion").textContent = `${completion.percent}%`;
-      document.getElementById("todayIntake").textContent = `${calcIntake(todayData)}`;
-      document.getElementById("todayNet").textContent = `${calcNet(todayData)}`;
+      todayCompletionEl.textContent = `${completion.percent}%`;
+      todayIntakeEl.textContent = `${calcIntake(todayData)}`;
+      todayNetEl.textContent = `${calcNet(todayData)}`;
     }
 
     function renderCards() {
-      if (!currentUser) {
-        container.innerHTML = `
-          <div class="empty-state">
-            <h3 style="margin-top:0;">先登入才能開始同步</h3>
-            <p>登入後，勾選、飲食內容與熱量會保存到雲端。</p>
-          </div>
-        `;
-        updateTodaySummary();
-        return;
-      }
-
       container.innerHTML = "";
       let current = new Date(startDate);
 
@@ -858,8 +850,7 @@
     }
 
     async function saveDateRecord(dateStr) {
-      if (!currentUser) return;
-      const dateRef = ref(db, `users/${currentUser.uid}/dailyResetRecords/${dateStr}`);
+      const dateRef = ref(db, `shares/${shareId}/dailyResetRecords/${dateStr}`);
       await set(dateRef, {
         ...getDateData(dateStr),
         date: dateStr,
@@ -876,18 +867,18 @@
           statusBox.textContent = "✅ 已同步";
         } catch (error) {
           console.error(error);
-          statusBox.textContent = "❌ 同步失敗，請檢查 Authentication 與 Database Rules";
+          statusBox.textContent = "❌ 同步失敗，請檢查 Database Rules";
         }
       }, 300);
     }
 
-    function subscribeToRecords(uid) {
+    function subscribeToRecords() {
       if (typeof unsubscribeRecords === "function") {
         unsubscribeRecords();
         unsubscribeRecords = null;
       }
 
-      const rootRef = ref(db, `users/${uid}/dailyResetRecords`);
+      const rootRef = ref(db, `shares/${shareId}/dailyResetRecords`);
       unsubscribeRecords = onValue(
         rootRef,
         (snapshot) => {
@@ -921,9 +912,8 @@
     }
 
     async function resetDate(dateStr) {
-      if (!currentUser) return;
       try {
-        const dateRef = ref(db, `users/${currentUser.uid}/dailyResetRecords/${dateStr}`);
+        const dateRef = ref(db, `shares/${shareId}/dailyResetRecords/${dateStr}`);
         await remove(dateRef);
         delete recordsStore[dateStr];
         renderCards();
@@ -934,48 +924,24 @@
       }
     }
 
-    loginBtn.addEventListener("click", async () => {
+    copyLinkBtn.addEventListener("click", async () => {
+      const link = getShareUrl();
       try {
-        statusBox.textContent = "正在登入 Google…";
-        await signInWithPopup(auth, provider);
+        await navigator.clipboard.writeText(link);
+        statusBox.textContent = "✅ 已複製同步網址";
       } catch (error) {
         console.error(error);
-        statusBox.textContent = `❌ 登入失敗：${error.message}`;
+        statusBox.textContent = "❌ 複製失敗，請手動複製網址列";
       }
     });
 
-    logoutBtn.addEventListener("click", async () => {
-      try {
-        await signOut(auth);
-      } catch (error) {
-        console.error(error);
-        statusBox.textContent = `❌ 登出失敗：${error.message}`;
-      }
-    });
-
-    onAuthStateChanged(auth, (user) => {
-      currentUser = user || null;
-
-      if (currentUser) {
-        userText.textContent = currentUser.displayName || currentUser.email || "已登入";
-        userAvatar.src = currentUser.photoURL || "https://via.placeholder.com/64?text=U";
-        loginBtn.style.display = "none";
-        logoutBtn.style.display = "inline-block";
-        statusBox.textContent = "已登入，正在讀取雲端資料…";
-        subscribeToRecords(currentUser.uid);
-      } else {
-        userText.textContent = "尚未登入";
-        userAvatar.src = "https://via.placeholder.com/64?text=🙂";
-        loginBtn.style.display = "inline-block";
-        logoutBtn.style.display = "none";
-        recordsStore = {};
-        if (typeof unsubscribeRecords === "function") {
-          unsubscribeRecords();
-          unsubscribeRecords = null;
-        }
-        renderCards();
-        statusBox.textContent = "請先登入 Google，登入後資料會同步到 Realtime Database。";
-      }
+    changeIdBtn.addEventListener("click", () => {
+      const input = prompt("輸入新的同步 ID（只能用英文、數字、-、_）", shareId);
+      if (!input) return;
+      const nextId = sanitizeId(input);
+      const url = new URL(window.location.href);
+      url.searchParams.set("id", nextId);
+      window.location.href = url.toString();
     });
 
     document.addEventListener("input", (e) => {
@@ -1001,7 +967,9 @@
       }
     });
 
+    updateShareUi();
     renderCards();
+    subscribeToRecords();
   </script>
 </body>
 </html>
