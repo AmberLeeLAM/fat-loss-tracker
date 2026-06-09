@@ -16,8 +16,8 @@
       --warning:#ffb84d;
       --shadow:0 8px 24px rgba(232,138,167,0.12);
     }
-  
-    *{ box-sizing:border-box; }
+
+    * { box-sizing: border-box; }
 
     body{
       margin:0;
@@ -26,7 +26,7 @@
       color:var(--text);
       padding:16px;
     }
- 
+
     .app{
       max-width:760px;
       margin:0 auto;
@@ -882,21 +882,25 @@
     }
 
     function subscribeToRecords(uid) {
-      if (unsubscribeRecords) {
+      if (typeof unsubscribeRecords === "function") {
         unsubscribeRecords();
         unsubscribeRecords = null;
       }
 
       const rootRef = ref(db, `users/${uid}/dailyResetRecords`);
-      unsubscribeRecords = onValue(rootRef, (snapshot) => {
-        const data = snapshot.val() || {};
-        recordsStore = data;
-        renderCards();
-        statusBox.textContent = "✅ 已從雲端載入";
-      }, (error) => {
-        console.error(error);
-        statusBox.textContent = "❌ 無法讀取資料，請檢查 Database Rules";
-      });
+      unsubscribeRecords = onValue(
+        rootRef,
+        (snapshot) => {
+          const data = snapshot.val() || {};
+          recordsStore = data;
+          renderCards();
+          statusBox.textContent = "✅ 已從雲端載入";
+        },
+        (error) => {
+          console.error(error);
+          statusBox.textContent = "❌ 無法讀取資料，請檢查 Database Rules";
+        }
+      );
     }
 
     function handleFieldUpdate(el) {
@@ -965,7 +969,7 @@
         loginBtn.style.display = "inline-block";
         logoutBtn.style.display = "none";
         recordsStore = {};
-        if (unsubscribeRecords) {
+        if (typeof unsubscribeRecords === "function") {
           unsubscribeRecords();
           unsubscribeRecords = null;
         }
