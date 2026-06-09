@@ -1,5 +1,94 @@
 <!DOCTYPE html>
-<html255,0.90);<html lang="zh-TW">
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Amber Daily Reset</title>
+
+  <style>
+    :root{
+      --bg:#fff7fb;
+      --card:#ffffff;
+      --primary:#e88aa7;
+      --primary-dark:#d86b8f;
+      --text:#333;
+      --muted:#777;
+      --success:#40b884;
+      --warning:#ffb84d;
+      --shadow:0 8px 24px rgba(232,138,167,0.12);
+    }
+
+    * { box-sizing: border-box; }
+
+    body{
+      margin:0;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,"Noto Sans TC",sans-serif;
+      background:linear-gradient(180deg,#fff8fb 0%,#fff2f7 100%);
+      color:var(--text);
+      padding:10px;
+    }
+
+    .app{
+      max-width:820px;
+      margin:0 auto;
+    }
+
+    .hero{
+      background:linear-gradient(135deg,#ffdbe8 0%,#fff1f7 100%);
+      border:1px solid #f7d5e1;
+      box-shadow:var(--shadow);
+      border-radius:20px;
+      padding:12px;
+      margin-bottom:12px;
+      position:sticky;
+      top:8px;
+      z-index:10;
+    }
+
+    .hero h1{
+      margin:0;
+      font-size:20px;
+      color:#c94f79;
+      line-height:1.2;
+      font-weight:800;
+    }
+
+    .quick-summary{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:6px;
+      margin-top:10px;
+    }
+
+    .summary-box{
+      background:rgba(255,255,255,0.92);
+      border:1px solid #f0d3dd;
+      border-radius:14px;
+      padding:8px 6px;
+      text-align:center;
+      min-height:68px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+    }
+
+    .summary-box .label{
+      font-size:10px;
+      color:var(--muted);
+      margin-bottom:4px;
+      line-height:1.2;
+    }
+
+    .summary-box .value{
+      font-size:18px;
+      font-weight:800;
+      color:#c94f79;
+      line-height:1.1;
+    }
+
+    .picker-card{
+      margin-top:10px;
+      background:rgba(255,255,255,0.92);
       border:1px solid #f0d3dd;
       border-radius:16px;
       overflow:hidden;
@@ -316,75 +405,29 @@
     }
 
     @media (min-width: 700px){
-      body{
-        padding:16px;
-      }
-
-      .hero{
-        padding:16px;
-      }
-
-      .hero h1{
-        font-size:26px;
-      }
-
-      .quick-summary{
-        gap:10px;
-      }
-
+      body{ padding:16px; }
+      .hero{ padding:16px; }
+      .hero h1{ font-size:26px; }
+      .quick-summary{ gap:10px; }
       .summary-box{
         min-height:84px;
         padding:10px;
       }
-
-      .summary-box .label{
-        font-size:12px;
-      }
-
-      .summary-box .value{
-        font-size:18px;
-      }
-
+      .summary-box .label{ font-size:12px; }
+      .summary-box .value{ font-size:18px; }
       .date-chip{
         min-width:62px;
         font-size:12px;
       }
-
-      .grid-2{
-        grid-template-columns:1fr 1fr;
-      }
-
-      .exercise-options{
-        grid-template-columns:1fr 1fr;
-      }
-
-      .stats{
-        grid-template-columns:repeat(3,1fr);
-      }
-
-      .date-title{
-        font-size:20px;
-      }
-
-      .tag{
-        font-size:11px;
-      }
-
-      .section-title{
-        font-size:15px;
-      }
-
-      .check-item{
-        font-size:14px;
-      }
-
-      .small{
-        font-size:12px;
-      }
-
-      .big{
-        font-size:18px;
-      }
+      .grid-2{ grid-template-columns:1fr 1fr; }
+      .exercise-options{ grid-template-columns:1fr 1fr; }
+      .stats{ grid-template-columns:repeat(3,1fr); }
+      .date-title{ font-size:20px; }
+      .tag{ font-size:11px; }
+      .section-title{ font-size:15px; }
+      .check-item{ font-size:14px; }
+      .small{ font-size:12px; }
+      .big{ font-size:18px; }
     }
   </style>
 </head>
@@ -433,12 +476,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
-    import {
-      getDatabase,
-      ref,
-      set,
-      onValue
-    } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-database.js";
+    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBBoo-Ql8khcGZjFniI_99kzrxE3pG5f3k",
@@ -462,12 +500,37 @@
       return cleaned || "amber";
     }
 
+    function formatLocalISO(date) {
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, "0");
+      const d = String(date.getDate()).padStart(2, "0");
+      return `${y}-${m}-${d}`;
+    }
+
+    function parseLocalDate(dateStr) {
+      const [y, m, d] = String(dateStr).split("-").map(Number);
+      return new Date(y, m - 1, d);
+    }
+
+    function formatDateShort(dateStr) {
+      const d = parseLocalDate(dateStr);
+      return `${d.getMonth() + 1}/${d.getDate()}`;
+    }
+
+    function escapeAttr(str = "") {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/"/g, "&quot;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
+
     const params = new URLSearchParams(window.location.search);
     const shareId = sanitizeId(params.get("id") || "amber");
 
-    const startDate = new Date("2026-06-09");
-    const endDate = new Date("2026-07-01");
-    const todayStr = new Date().toISOString().split("T")[0];
+    const startDate = new Date(2026, 5, 9);   // 2026-06-09
+    const endDate = new Date(2026, 6, 1);     // 2026-07-01
+    const todayStr = formatLocalISO(new Date());
     const weekdayMap = ["日","一","二","三","四","五","六"];
 
     let recordsStore = {};
@@ -482,7 +545,7 @@
     {
       let d = new Date(startDate);
       while (d <= endDate) {
-        allDates.push(d.toISOString().split("T")[0]);
+        allDates.push(formatLocalISO(d));
         d.setDate(d.getDate() + 1);
       }
     }
@@ -503,11 +566,6 @@
     const selectTodayBtn = document.getElementById("selectTodayBtn");
     const selectAllBtn = document.getElementById("selectAllBtn");
     const clearDatesBtn = document.getElementById("clearDatesBtn");
-
-    function formatDateShort(dateStr) {
-      const d = new Date(dateStr);
-      return `${d.getMonth() + 1}/${d.getDate()}`;
-    }
 
     function updatePickerSummary() {
       pickerSummary.textContent = `已選 ${selectedDates.size} 天`;
@@ -536,19 +594,15 @@
         water1600:false,
         sleep0000:false,
         wake0730:false,
-
         exercise_glutes:false,
         exercise_upper:false,
         exercise_incline:false,
         exercise_walk:false,
-
         exerciseBurn:"",
         proteinDrink:false,
         proteinKcal:200,
-
         noLateSnack:false,
         dietControl:false,
-
         lunchText:"",
         lunchKcal:"",
         dinnerText:"",
@@ -567,7 +621,7 @@
 
     function safeNumber(val) {
       const num = Number(val);
-      return isNaN(num) ? 0 : num;
+      return Number.isNaN(num) ? 0 : num;
     }
 
     function hasAnyExercise(data) {
@@ -597,7 +651,7 @@
 
     function calcCompletion(dateStr) {
       const data = getDateData(dateStr);
-      const day = new Date(dateStr).getDay();
+      const day = parseLocalDate(dateStr).getDay();
       const schedule = getSchedule(day);
 
       let done = 0;
@@ -632,14 +686,6 @@
       };
     }
 
-    function escapeAttr(str = "") {
-      return String(str)
-        .replace(/&/g, "&amp;")
-        .replace(/"/g, "&quot;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;");
-    }
-
     function updateTodaySummary() {
       const todayData = getDateData(todayStr);
       const completion = calcCompletion(todayStr);
@@ -655,20 +701,25 @@
         chip.type = "button";
         chip.className = "date-chip" + (selectedDates.has(dateStr) ? " active" : "");
         chip.textContent = formatDateShort(dateStr);
+
         chip.addEventListener("click", (e) => {
           e.stopPropagation();
+
           if (selectedDates.has(dateStr)) {
             selectedDates.delete(dateStr);
           } else {
             selectedDates.add(dateStr);
           }
+
           if (selectedDates.size === 0) {
             selectedDates.add(dateStr);
           }
+
           updatePickerSummary();
           renderDatePicker();
           renderCards();
         });
+
         datePicker.appendChild(chip);
       });
     }
@@ -685,7 +736,7 @@
       }
 
       datesToShow.forEach(dateStr => {
-        const day = new Date(dateStr).getDay();
+        const day = parseLocalDate(dateStr).getDay();
         const weekday = weekdayMap[day];
         const schedule = getSchedule(day);
         const data = getDateData(dateStr);
@@ -792,27 +843,27 @@
 
               <div class="field">
                 <label>中餐吃了什麼</label>
-                <input type="text" data-date="${dateStr}" data-field="lunchText" value="${escapeAttr(data.lunchText)}" placeholder="例如：舒肥雞胸＋地瓜＋無糖豆漿">
+                <input type="text" data-date="${dateStr}" data-field="lunchText" value="${escapeAttr(data.lunchText)}" placeholder="例如：三角飯糰">
               </div>
 
               <div class="field">
                 <label>中餐熱量（kcal）</label>
-                <input type="number" inputmode="numeric" data-date="${dateStr}" data-field="lunchKcal" value="${escapeAttr(data.lunchKcal)}" placeholder="例如 450">
+                <input type="number" inputmode="numeric" data-date="${dateStr}" data-field="lunchKcal" value="${escapeAttr(data.lunchKcal)}" placeholder="例如 260">
               </div>
 
               <div class="field">
                 <label>晚餐吃了什麼</label>
-                <input type="text" data-date="${dateStr}" data-field="dinnerText" value="${escapeAttr(data.dinnerText)}" placeholder="例如：鮭魚沙拉＋茶葉蛋">
+                <input type="text" data-date="${dateStr}" data-field="dinnerText" value="${escapeAttr(data.dinnerText)}" placeholder="例如：雞胸沙拉">
               </div>
 
               <div class="field">
                 <label>晚餐熱量（kcal）</label>
-                <input type="number" inputmode="numeric" data-date="${dateStr}" data-field="dinnerKcal" value="${escapeAttr(data.dinnerKcal)}" placeholder="例如 500">
+                <input type="number" inputmode="numeric" data-date="${dateStr}" data-field="dinnerKcal" value="${escapeAttr(data.dinnerKcal)}" placeholder="例如 420">
               </div>
 
               <div class="field">
                 <label>其他 / 點心（選填）</label>
-                <input type="text" data-date="${dateStr}" data-field="otherText" value="${escapeAttr(data.otherText)}" placeholder="例如：水果、咖啡、餅乾">
+                <input type="text" data-date="${dateStr}" data-field="otherText" value="${escapeAttr(data.otherText)}" placeholder="例如：水果、咖啡">
               </div>
 
               <div class="field">
@@ -904,16 +955,16 @@
       });
     }
 
-    function scheduleSave(dateStr, fieldKey = "") {
+    function scheduleCheckboxSave(dateStr, fieldKey = "") {
       const key = `${dateStr}-${fieldKey}`;
       clearTimeout(saveTimers[key]);
       saveTimers[key] = setTimeout(async () => {
         try {
           await saveDateRecord(dateStr);
         } catch (error) {
-          console.error(error);
+          console.error("儲存失敗：", error);
         }
-      }, 800);
+      }, 200);
     }
 
     function subscribeToRecords() {
@@ -933,37 +984,56 @@
         }
 
         renderCards();
+      }, (error) => {
+        console.error("讀取資料失敗：", error);
       });
     }
 
-    function handleFieldUpdate(target) {
+    function handleCheckboxChange(target) {
       const dateStr = target.dataset.date;
       const field = target.dataset.field;
       if (!dateStr || !field) return;
 
       const data = getDateData(dateStr);
-
-      if (target.type === "checkbox") {
-        data[field] = target.checked;
-        updateOneDateUI(dateStr);
-        scheduleSave(dateStr, field);
-      } else {
-        data[field] = target.value;
-        updateOneDateUI(dateStr);
-        scheduleSave(dateStr, field);
-      }
+      data[field] = target.checked;
+      updateOneDateUI(dateStr);
+      scheduleCheckboxSave(dateStr, field);
     }
 
-    function startTypingMode() {
-      suppressRenderWhileTyping = true;
+    function handleTextInput(target) {
+      const dateStr = target.dataset.date;
+      const field = target.dataset.field;
+      if (!dateStr || !field) return;
+
+      const data = getDateData(dateStr);
+      data[field] = target.value;
+      updateOneDateUI(dateStr);
     }
 
-    function endTypingMode() {
-      suppressRenderWhileTyping = false;
-      if (pendingRemoteRender) {
-        pendingRemoteRender = false;
-        renderCards();
+    async function handleTextBlur(target) {
+      const dateStr = target.dataset.date;
+      if (!dateStr) return;
+
+      try {
+        await saveDateRecord(dateStr);
+      } catch (error) {
+        console.error("儲存失敗：", error);
       }
+
+      setTimeout(() => {
+        const active = document.activeElement;
+        const stillEditing = active &&
+          active.matches &&
+          active.matches("input[type='text'][data-date], input[type='number'][data-date]");
+
+        if (!stillEditing) {
+          suppressRenderWhileTyping = false;
+          if (pendingRemoteRender) {
+            pendingRemoteRender = false;
+            renderCards();
+          }
+        }
+      }, 50);
     }
 
     togglePicker.addEventListener("click", () => {
@@ -974,11 +1044,7 @@
     selectTodayBtn.addEventListener("click", (e) => {
       e.stopPropagation();
       selectedDates.clear();
-      if (allDates.includes(todayStr)) {
-        selectedDates.add(todayStr);
-      } else {
-        selectedDates.add(allDates[0]);
-      }
+      selectedDates.add(allDates.includes(todayStr) ? todayStr : allDates[0]);
       updatePickerSummary();
       renderDatePicker();
       renderCards();
@@ -996,11 +1062,7 @@
     clearDatesBtn.addEventListener("click", (e) => {
       e.stopPropagation();
       selectedDates.clear();
-      if (allDates.includes(todayStr)) {
-        selectedDates.add(todayStr);
-      } else {
-        selectedDates.add(allDates[0]);
-      }
+      selectedDates.add(allDates.includes(todayStr) ? todayStr : allDates[0]);
       updatePickerSummary();
       renderDatePicker();
       renderCards();
@@ -1009,36 +1071,28 @@
     document.addEventListener("focusin", (e) => {
       const target = e.target;
       if (target.matches("input[type='text'][data-date], input[type='number'][data-date]")) {
-        startTypingMode();
+        suppressRenderWhileTyping = true;
       }
     });
 
-    document.addEventListener("focusout", (e) => {
+    document.addEventListener("focusout", async (e) => {
       const target = e.target;
       if (target.matches("input[type='text'][data-date], input[type='number'][data-date]")) {
-        setTimeout(() => {
-          const active = document.activeElement;
-          const stillTyping = active && active.matches &&
-            active.matches("input[type='text'][data-date], input[type='number'][data-date]");
-
-          if (!stillTyping) {
-            endTypingMode();
-          }
-        }, 50);
+        await handleTextBlur(target);
       }
     });
 
     document.addEventListener("input", (e) => {
       const target = e.target;
       if (target.matches("input[type='text'][data-date], input[type='number'][data-date]")) {
-        handleFieldUpdate(target);
+        handleTextInput(target);
       }
     });
 
     document.addEventListener("change", (e) => {
       const target = e.target;
       if (target.matches("input[type='checkbox'][data-date]")) {
-        handleFieldUpdate(target);
+        handleCheckboxChange(target);
       }
     });
 
@@ -1049,91 +1103,3 @@
   </script>
 </body>
 </html>
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Amber Daily Reset</title>
-  <style>
-    :root{
-      --bg:#fff7fb;
-      --card:#ffffff;
-      --primary:#e88aa7;
-      --primary-dark:#d86b8f;
-      --text:#333;
-      --muted:#777;
-      --success:#40b884;
-      --warning:#ffb84d;
-      --shadow:0 8px 24px rgba(232,138,167,0.12);
-      --line:#f3d6e1;
-    }
-
-    * { box-sizing: border-box; }
-
-    body{
-      margin:0;
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,"Noto Sans TC",sans-serif;
-      background:linear-gradient(180deg,#fff8fb 0%,#fff2f7 100%);
-      color:var(--text);
-      padding:10px;
-    }
-
-    .app{
-      max-width:820px;
-      margin:0 auto;
-    }
-
-    .hero{
-      background:linear-gradient(135deg,#ffdbe8 0%,#fff1f7 100%);
-      border:1px solid #f7d5e1;
-      box-shadow:var(--shadow);
-      border-radius:20px;
-      padding:12px;
-      margin-bottom:12px;
-      position:sticky;
-      top:8px;
-      z-index:10;
-    }
-
-    .hero h1{
-      margin:0;
-      font-size:20px;
-      color:#c94f79;
-      line-height:1.2;
-      font-weight:800;
-    }
-
-    .quick-summary{
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:6px;
-      margin-top:10px;
-    }
-
-    .summary-box{
-      background:rgba(255,255,255,0.92);
-      border:1px solid #f0d3dd;
-      border-radius:14px;
-      padding:8px 6px;
-      text-align:center;
-      min-height:68px;
-      display:flex;
-      flex-direction:column;
-      justify-content:center;
-    }
-
-    .summary-box .label{
-      font-size:10px;
-      color:var(--muted);
-      margin-bottom:4px;
-      line-height:1.2;
-    }
-
-    .summary-box .value{
-      font-size:18px;
-      font-weight:800;
-      color:#c94f79;
-      line-height:1.1;
-    }
-
-    .picker-card{
-      margin-top:10px;
