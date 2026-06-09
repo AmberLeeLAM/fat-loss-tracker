@@ -13,7 +13,6 @@
       --text:#333;
       --muted:#777;
       --success:#40b884;
-      --warning:#ffb84d;
       --shadow:0 8px 24px rgba(232,138,167,0.12);
       --line:#f3d6e1;
     }
@@ -25,7 +24,7 @@
       font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,"Noto Sans TC",sans-serif;
       background:linear-gradient(180deg,#fff8fb 0%,#fff2f7 100%);
       color:var(--text);
-      padding:16px;
+      padding:10px;
     }
 
     .app{
@@ -37,9 +36,9 @@
       background:linear-gradient(135deg,#ffdbe8 0%,#fff1f7 100%);
       border:1px solid #f7d5e1;
       box-shadow:var(--shadow);
-      border-radius:24px;
-      padding:18px;
-      margin-bottom:18px;
+      border-radius:20px;
+      padding:12px;
+      margin-bottom:12px;
       position:sticky;
       top:8px;
       z-index:10;
@@ -47,64 +46,105 @@
 
     .hero h1{
       margin:0;
-      font-size:28px;
+      font-size:20px;
       color:#c94f79;
+      line-height:1.2;
+      font-weight:800;
     }
 
     .quick-summary{
       display:grid;
       grid-template-columns:repeat(3,1fr);
-      gap:10px;
-      margin-top:14px;
+      gap:6px;
+      margin-top:10px;
     }
 
     .summary-box{
-      background:rgba(255,255,255,0.88);
+      background:rgba(255,255,255,0.92);
       border:1px solid #f0d3dd;
-      border-radius:16px;
-      padding:10px;
+      border-radius:14px;
+      padding:8px 6px;
       text-align:center;
+      min-height:68px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
     }
 
     .summary-box .label{
-      font-size:12px;
+      font-size:10px;
       color:var(--muted);
       margin-bottom:4px;
+      line-height:1.2;
     }
 
     .summary-box .value{
       font-size:18px;
-      font-weight:700;
+      font-weight:800;
       color:#c94f79;
+      line-height:1.1;
     }
 
-    .picker-wrap{
-      margin-top:14px;
-      background:rgba(255,255,255,0.82);
+    .picker-card{
+      margin-top:10px;
+      background:rgba(255,255,255,0.90);
       border:1px solid #f0d3dd;
-      border-radius:18px;
-      padding:12px;
+      border-radius:16px;
+      overflow:hidden;
     }
 
-    .picker-top{
+    .picker-header{
       display:flex;
       justify-content:space-between;
       align-items:center;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-bottom:10px;
+      gap:8px;
+      padding:10px 12px;
+      cursor:pointer;
+      background:#fff;
     }
 
     .picker-title{
-      font-size:14px;
+      font-size:13px;
       font-weight:700;
       color:#6b4d59;
+      line-height:1.2;
+    }
+
+    .picker-sub{
+      font-size:10px;
+      color:#8b7180;
+      margin-top:2px;
+    }
+
+    .toggle-btn{
+      border:none;
+      background:#fff0f5;
+      color:#c94f79;
+      border:1px solid #f0cbd8;
+      border-radius:999px;
+      padding:6px 10px;
+      font-size:11px;
+      font-weight:700;
+      cursor:pointer;
+      white-space:nowrap;
+    }
+
+    .picker-body{
+      display:none;
+      padding:10px 12px 12px;
+      border-top:1px solid #f3d9e3;
+      background:#fff;
+    }
+
+    .picker-body.open{
+      display:block;
     }
 
     .picker-actions{
       display:flex;
-      gap:8px;
+      gap:6px;
       flex-wrap:wrap;
+      margin-bottom:10px;
     }
 
     .btn{
@@ -113,42 +153,35 @@
       color:#c94f79;
       border:1px solid #f0cbd8;
       border-radius:999px;
-      padding:9px 14px;
+      padding:7px 10px;
       font-weight:700;
       cursor:pointer;
-      font-size:13px;
+      font-size:11px;
     }
 
     .btn:hover{
       background:#fff5f8;
     }
 
-    .btn.primary{
-      background:#c94f79;
-      color:#fff;
-      border-color:#c94f79;
-    }
-
-    .btn.primary:hover{
-      background:#b9436d;
-    }
-
     .date-picker{
       display:flex;
       flex-wrap:wrap;
-      gap:8px;
+      gap:6px;
     }
 
     .date-chip{
       border:1px solid #efc9d7;
       border-radius:999px;
-      padding:8px 12px;
+      padding:7px 10px;
       cursor:pointer;
       background:#fff;
       color:#7b5564;
-      font-size:13px;
+      font-size:11px;
       user-select:none;
       transition:0.2s ease;
+      min-width:54px;
+      text-align:center;
+      font-weight:700;
     }
 
     .date-chip.active{
@@ -160,9 +193,9 @@
     .day-card{
       background:var(--card);
       border:1px solid #f5d9e4;
-      border-radius:22px;
+      border-radius:18px;
       box-shadow:var(--shadow);
-      margin-bottom:16px;
+      margin-bottom:12px;
       overflow:hidden;
     }
 
@@ -171,7 +204,7 @@
     }
 
     .day-header{
-      padding:16px 16px 10px;
+      padding:12px 12px 8px;
       border-bottom:1px solid #f8e5ec;
       background:linear-gradient(180deg,#fffdfd 0%,#fff6fa 100%);
     }
@@ -179,45 +212,46 @@
     .date-row{
       display:flex;
       justify-content:space-between;
-      align-items:center;
-      gap:12px;
+      align-items:flex-start;
+      gap:10px;
       flex-wrap:wrap;
     }
 
     .date-title{
-      font-size:20px;
-      font-weight:700;
+      font-size:16px;
+      font-weight:800;
       color:#c94f79;
+      line-height:1.3;
     }
 
     .tag{
       display:inline-flex;
       align-items:center;
       border-radius:999px;
-      padding:6px 10px;
-      font-size:12px;
-      font-weight:600;
+      padding:5px 8px;
+      font-size:10px;
+      font-weight:700;
       background:#fff0f5;
       color:#c94f79;
       border:1px solid #f4d0dc;
     }
 
     .day-body{
-      padding:16px;
+      padding:12px;
     }
 
     .section{
-      margin-bottom:18px;
-      padding:14px;
+      margin-bottom:12px;
+      padding:10px;
       background:#fffafa;
       border:1px solid #f8e2ea;
-      border-radius:18px;
+      border-radius:14px;
     }
 
     .section-title{
-      font-size:15px;
-      font-weight:700;
-      margin-bottom:10px;
+      font-size:13px;
+      font-weight:800;
+      margin-bottom:8px;
       color:#6b4d59;
       display:flex;
       align-items:center;
@@ -228,23 +262,24 @@
       display:flex;
       align-items:flex-start;
       gap:10px;
-      padding:7px 0;
-      line-height:1.5;
+      padding:6px 0;
+      line-height:1.4;
       color:#444;
+      font-size:13px;
     }
 
     .check-item input[type="checkbox"]{
       width:18px;
       height:18px;
-      margin-top:2px;
+      margin-top:1px;
       accent-color:var(--primary);
       flex-shrink:0;
     }
 
     .grid-2{
       display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:12px;
+      grid-template-columns:1fr;
+      gap:10px;
     }
 
     .field{
@@ -253,10 +288,10 @@
 
     .field label{
       display:block;
-      font-size:13px;
+      font-size:12px;
       color:#666;
-      margin-bottom:6px;
-      font-weight:600;
+      margin-bottom:5px;
+      font-weight:700;
     }
 
     input[type="text"],
@@ -264,8 +299,8 @@
       width:100%;
       border:1px solid #ecd6df;
       background:#fff;
-      border-radius:14px;
-      padding:12px 12px;
+      border-radius:12px;
+      padding:10px 10px;
       font-size:14px;
       outline:none;
       transition:0.2s ease;
@@ -280,43 +315,44 @@
     .exercise-options{
       display:grid;
       grid-template-columns:1fr 1fr;
-      gap:8px 12px;
+      gap:8px;
     }
 
     .pill-check{
       display:flex;
       align-items:center;
       gap:8px;
-      padding:10px 12px;
+      padding:9px 10px;
       border:1px solid #efd5df;
-      border-radius:14px;
+      border-radius:12px;
       background:#fff;
+      font-size:12px;
     }
 
     .stats{
       display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:10px;
-      margin-top:12px;
+      grid-template-columns:1fr 1fr 1fr;
+      gap:8px;
+      margin-top:10px;
     }
 
     .stat{
-      border-radius:16px;
-      padding:12px;
+      border-radius:14px;
+      padding:10px;
       background:#fff;
       border:1px solid #f0dbe3;
       text-align:center;
     }
 
     .small{
-      font-size:12px;
+      font-size:10px;
       color:var(--muted);
       margin-bottom:4px;
     }
 
     .big{
-      font-size:18px;
-      font-weight:700;
+      font-size:15px;
+      font-weight:800;
     }
 
     .green{ color:var(--success); }
@@ -324,20 +360,20 @@
     .orange{ color:#f19a2c; }
 
     .progress-wrap{
-      margin-top:14px;
+      margin-top:10px;
     }
 
     .progress-label{
       display:flex;
       justify-content:space-between;
-      font-size:13px;
+      font-size:11px;
       color:#666;
-      margin-bottom:6px;
-      font-weight:600;
+      margin-bottom:5px;
+      font-weight:700;
     }
 
     .progress{
-      height:12px;
+      height:10px;
       border-radius:999px;
       background:#f8dfe8;
       overflow:hidden;
@@ -352,7 +388,7 @@
 
     .small-note{
       color:#8b7180;
-      font-size:12px;
+      font-size:11px;
       line-height:1.5;
       margin-top:8px;
     }
@@ -360,24 +396,82 @@
     .empty-state{
       background:#fff;
       border:1px dashed #efcad8;
-      border-radius:18px;
-      padding:22px;
+      border-radius:16px;
+      padding:18px;
       text-align:center;
       color:#8b7180;
       box-shadow:var(--shadow);
     }
 
-    @media (max-width:640px){
-      body{ padding:12px; }
-      .quick-summary,
-      .stats,
-      .grid-2,
-      .exercise-options{
-        grid-template-columns:1fr;
+    @media (min-width: 700px){
+      body{
+        padding:16px;
       }
-      .date-title{ font-size:18px; }
-      .picker-top{
-        align-items:flex-start;
+
+      .hero{
+        padding:16px;
+      }
+
+      .hero h1{
+        font-size:26px;
+      }
+
+      .quick-summary{
+        gap:10px;
+      }
+
+      .summary-box{
+        min-height:84px;
+        padding:10px;
+      }
+
+      .summary-box .label{
+        font-size:12px;
+      }
+
+      .summary-box .value{
+        font-size:18px;
+      }
+
+      .date-chip{
+        min-width:62px;
+        font-size:12px;
+      }
+
+      .grid-2{
+        grid-template-columns:1fr 1fr;
+      }
+
+      .exercise-options{
+        grid-template-columns:1fr 1fr;
+      }
+
+      .stats{
+        grid-template-columns:repeat(3,1fr);
+      }
+
+      .date-title{
+        font-size:20px;
+      }
+
+      .tag{
+        font-size:11px;
+      }
+
+      .section-title{
+        font-size:15px;
+      }
+
+      .check-item{
+        font-size:14px;
+      }
+
+      .small{
+        font-size:12px;
+      }
+
+      .big{
+        font-size:18px;
       }
     }
   </style>
@@ -402,16 +496,23 @@
         </div>
       </div>
 
-      <div class="picker-wrap">
-        <div class="picker-top">
-          <div class="picker-title">選擇日期（可複選）</div>
+      <div class="picker-card">
+        <div class="picker-header" id="togglePicker">
+          <div>
+            <div class="picker-title">選擇日期（可複選）</div>
+            <div class="picker-sub" id="pickerSummary">已選 1 天</div>
+          </div>
+          <button type="button" class="toggle-btn" id="toggleBtn">展開</button>
+        </div>
+
+        <div class="picker-body" id="pickerBody">
           <div class="picker-actions">
             <button class="btn" id="selectTodayBtn" type="button">只看今天</button>
             <button class="btn" id="selectAllBtn" type="button">全選</button>
             <button class="btn" id="clearDatesBtn" type="button">清除選取</button>
           </div>
+          <div class="date-picker" id="datePicker"></div>
         </div>
-        <div class="date-picker" id="datePicker"></div>
       </div>
     </div>
 
@@ -461,16 +562,6 @@
     let unsubscribeFn = null;
     const saveTimers = {};
 
-    const container = document.getElementById("container");
-    const datePicker = document.getElementById("datePicker");
-    const todayCompletionEl = document.getElementById("todayCompletion");
-    const todayIntakeEl = document.getElementById("todayIntake");
-    const todayNetEl = document.getElementById("todayNet");
-
-    const selectTodayBtn = document.getElementById("selectTodayBtn");
-    const selectAllBtn = document.getElementById("selectAllBtn");
-    const clearDatesBtn = document.getElementById("clearDatesBtn");
-
     const allDates = [];
     {
       let d = new Date(startDate);
@@ -484,9 +575,31 @@
       allDates.includes(todayStr) ? [todayStr] : [allDates[0]]
     );
 
+    const container = document.getElementById("container");
+    const datePicker = document.getElementById("datePicker");
+    const todayCompletionEl = document.getElementById("todayCompletion");
+    const todayIntakeEl = document.getElementById("todayIntake");
+    const todayNetEl = document.getElementById("todayNet");
+    const pickerBody = document.getElementById("pickerBody");
+    const toggleBtn = document.getElementById("toggleBtn");
+    const pickerSummary = document.getElementById("pickerSummary");
+    const togglePicker = document.getElementById("togglePicker");
+
+    const selectTodayBtn = document.getElementById("selectTodayBtn");
+    const selectAllBtn = document.getElementById("selectAllBtn");
+    const clearDatesBtn = document.getElementById("clearDatesBtn");
+
+    let pickerOpen = false;
+
     function formatDateShort(dateStr) {
       const d = new Date(dateStr);
       return `${d.getMonth() + 1}/${d.getDate()}`;
+    }
+
+    function updatePickerSummary() {
+      pickerSummary.textContent = `已選 ${selectedDates.size} 天`;
+      pickerBody.classList.toggle("open", pickerOpen);
+      toggleBtn.textContent = pickerOpen ? "收起" : "展開";
     }
 
     function getSchedule(day) {
@@ -629,17 +742,17 @@
         chip.type = "button";
         chip.className = "date-chip" + (selectedDates.has(dateStr) ? " active" : "");
         chip.textContent = formatDateShort(dateStr);
-        chip.addEventListener("click", () => {
+        chip.addEventListener("click", (e) => {
+          e.stopPropagation();
           if (selectedDates.has(dateStr)) {
             selectedDates.delete(dateStr);
           } else {
             selectedDates.add(dateStr);
           }
-
           if (selectedDates.size === 0) {
             selectedDates.add(dateStr);
           }
-
+          updatePickerSummary();
           renderDatePicker();
           renderCards();
         });
@@ -919,27 +1032,42 @@
       scheduleSave(dateStr);
     }
 
-    selectTodayBtn.addEventListener("click", () => {
+    togglePicker.addEventListener("click", () => {
+      pickerOpen = !pickerOpen;
+      updatePickerSummary();
+    });
+
+    selectTodayBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
       selectedDates.clear();
       if (allDates.includes(todayStr)) {
         selectedDates.add(todayStr);
       } else {
         selectedDates.add(allDates[0]);
       }
+      updatePickerSummary();
       renderDatePicker();
       renderCards();
     });
 
-    selectAllBtn.addEventListener("click", () => {
+    selectAllBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
       selectedDates.clear();
       allDates.forEach(d => selectedDates.add(d));
+      updatePickerSummary();
       renderDatePicker();
       renderCards();
     });
 
-    clearDatesBtn.addEventListener("click", () => {
+    clearDatesBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
       selectedDates.clear();
-      selectedDates.add(allDates[0]);
+      if (allDates.includes(todayStr)) {
+        selectedDates.add(todayStr);
+      } else {
+        selectedDates.add(allDates[0]);
+      }
+      updatePickerSummary();
       renderDatePicker();
       renderCards();
     });
@@ -958,6 +1086,7 @@
       }
     });
 
+    updatePickerSummary();
     renderDatePicker();
     renderCards();
     subscribeToRecords();
