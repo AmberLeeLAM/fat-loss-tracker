@@ -1,91 +1,142 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-<meta charset="UTF-8">
-<title>🌸 Amber Fat Loss Plan 🌸</title>
-<style>
-  body {
-    font-family: Arial;
-    background: #f6f6f6;
-    padding: 20px;
-  }
-  .card {
-    background: white;
-    padding: 20px;
-    margin-bottom: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  }
-  input[type="text"] {
-    width: 90%;
-    padding: 5px;
-    margin: 5px 0;
-  }
-</style>
-</head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🌸 Amber Fat Loss Plan 🌸</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f6f6f6;
+      padding: 16px;
+      margin: 0;
+    }
 
+    h1 {
+      text-align: center;
+      color: #e26d8c;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 18px;
+      margin-bottom: 16px;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .section-title {
+      font-weight: bold;
+      margin-top: 12px;
+      margin-bottom: 8px;
+      color: #444;
+    }
+
+    label {
+      display: block;
+      margin: 6px 0;
+      line-height: 1.6;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+      width: 95%;
+      padding: 8px;
+      margin-top: 4px;
+      margin-bottom: 8px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    .inline-group label {
+      display: inline-block;
+      margin-right: 12px;
+    }
+
+    .note {
+      color: #666;
+      font-size: 14px;
+      margin-top: 8px;
+    }
+  </style>
+</head>
 <body>
 
-<h1>🌸 Amber’s Daily Reset 🌸</h1>
+  <h1>🌸 Amber’s Daily Reset 🌸</h1>
+  <div id="container"></div>
 
-<div id="container"></div>
+  <script>
+    const startDate = new Date("2026-06-09");
+    const endDate = new Date("2026-07-01");
 
-<script>
-const startDate = new Date("2026-06-09");
-const endDate = new Date("2026-07-01");
+    function getSchedule(day) {
+      switch(day) {
+        case 1: return "18:30-19:30 運動";
+        case 2: return "12:30-13:30 運動";
+        case 3: return "插花課｜休息";
+        case 4: return "運動（12:30-13:30 或 18:30-19:30）";
+        case 5: return "休息 / 散步";
+        case 6: return "休息";
+        case 0: return "休息";
+      }
+    }
 
-function getSchedule(day) {
-  switch(day) {
-    case 1: return "18:30-19:30 運動";
-    case 2: return "12:30-13:30 運動";
-    case 3: return "插花課｜休息";
-    case 4: return "運動（12:30 或 18:30）";
-    case 5: return "休息 / 散步";
-    case 6:
-    case 0: return "休息";
-  }
-}
+    const weekdayMap = ["日","一","二","三","四","五","六"];
+    let current = new Date(startDate);
 
-let current = new Date(startDate);
+    while (current <= endDate) {
+      const day = current.getDay();
+      const dateStr = current.toISOString().split("T")[0];
 
-while (current <= endDate) {
-  let day = current.getDay();
-  let dateStr = current.toISOString().split("T")[0];
+      const card = `
+        <div class="card">
+          <h2>${dateStr}（星期${weekdayMap[day]}）</h2>
+          <p>📅 今日安排：${getSchedule(day)}</p>
 
-  let card = `
-  <div class="card">
-    <h2>${dateStr}（${["日","一","二","三","四","五","六"][day]}）</h2>
+          <div class="section-title">💧 喝水</div>
+          <label><input type="checkbox"> 09:00 喝水 500cc</label>
+          <label><input type="checkbox"> 12:00-13:00 喝水 500cc</label>
+          <label><input type="checkbox"> 14:00-16:00 喝水 500cc</label>
+          <label><input type="checkbox"> 16:00-19:00 喝水 500cc</label>
 
-    <p>📅 今日安排：${getSchedule(day)}</p>
+          <div class="section-title">😴 作息</div>
+          <label><input type="checkbox"> 00:00 前睡覺</label>
+          <label><input type="checkbox"> 07:30 起床</label>
 
-    <b>✅ Daily Reset</b><br>
-    <label><input type="checkbox"> 09:00 喝水 500cc</label><br>
-    <label><input type="checkbox"> 12:00-13:00 喝水 500cc</label><br>
-    <label><input type="checkbox"> 14:00-16:00 喝水 500cc</label><br>
-    <label><input type="checkbox"> 16:00-19:00 喝水 500cc</label><br><br>
+          <div class="section-title">🏋️ 運動</div>
+          <div class="inline-group">
+            <label><input type="checkbox"> 重訓（臀腿）</label>
+            <label><input type="checkbox"> 重訓（上半身）</label>
+            <label><input type="checkbox"> 爬坡機</label>
+            <label><input type="checkbox"> 走路超過 5000 步</label>
+          </div>
 
-    <b>🏋️ 運動</b><br>
-    <label><input type="checkbox"> 重訓（臀腿）</label>
-    <label><input type="checkbox"> 重訓（上半身）</label>
-    <label><input type="checkbox"> 爬坡機</label>
-    <label><input type="checkbox"> 步行 >5000</label><br>
-    消耗：<input type="text" placeholder="kcal"><br><br>
+          <label>消耗熱量（kcal）
+            <input type="number" placeholder="例如：250">
+          </label>
 
-    <label><input type="checkbox"> 運動後喝 Protein Drink</label><br>
-    <label><input type="checkbox"> 今天沒有吃宵夜</label><br><br>
+          <label><input type="checkbox"> 運動後喝 Protein Drink</label>
+          <label><input type="checkbox"> 今天沒有吃宵夜</label>
+          <label><input type="checkbox"> 今天有控制飲食</label>
 
-    <b>🍱 飲食紀錄</b><br>
-    中餐：<input type="text" placeholder="今天吃了什麼"><br>
-    晚餐：<input type="text" placeholder="今天吃了什麼"><br>
+          <div class="section-title">🍱 飲食紀錄</div>
+          <label>中餐：
+            <input type="text" placeholder="今天中餐吃了什麼">
+          </label>
+          <label>晚餐：
+            <input type="text" placeholder="今天晚餐吃了什麼">
+          </label>
 
-    <p>🔥 Keep Going</p>
-  </div>
-  `;
+          <p class="note">🔥 Keep Going</p>
+        </div>
+      `;
 
-  document.getElementById("container").innerHTML += card;
-  current.setDate(current.getDate() + 1);
-}
-</script>
+      document.getElementById("container").innerHTML += card;
+      current.setDate(current.getDate() + 1);
+    }
+  </script>
 
 </body>
 </html>
