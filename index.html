@@ -489,7 +489,7 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app, firebaseConfig.databaseURL);
+    const db = getDatabase(app);
 
     function sanitizeId(raw) {
       const cleaned = String(raw || "")
@@ -696,6 +696,7 @@
 
     function renderDatePicker() {
       datePicker.innerHTML = "";
+
       allDates.forEach(dateStr => {
         const chip = document.createElement("button");
         chip.type = "button";
@@ -823,12 +824,26 @@
               <div class="grid-2" style="margin-top:12px;">
                 <div class="field">
                   <label>運動消耗（kcal）</label>
-                  <input type="number" inputmode="numeric" data-date="${dateStr}" data-field="exerciseBurn" value="${escapeAttr(data.exerciseBurn)}" placeholder="例如 250">
+                  <input
+                    type="number"
+                    inputmode="numeric"
+                    data-date="${dateStr}"
+                    data-field="exerciseBurn"
+                    value="${escapeAttr(data.exerciseBurn)}"
+                    placeholder="例如 250"
+                  >
                 </div>
 
                 <div class="field">
                   <label>Protein Drink 熱量（預設 200 kcal）</label>
-                  <input type="number" inputmode="numeric" data-date="${dateStr}" data-field="proteinKcal" value="${escapeAttr(data.proteinKcal)}" placeholder="200">
+                  <input
+                    type="number"
+                    inputmode="numeric"
+                    data-date="${dateStr}"
+                    data-field="proteinKcal"
+                    value="${escapeAttr(data.proteinKcal)}"
+                    placeholder="200"
+                  >
                 </div>
               </div>
 
@@ -843,32 +858,71 @@
 
               <div class="field">
                 <label>中餐吃了什麼</label>
-                <input type="text" data-date="${dateStr}" data-field="lunchText" value="${escapeAttr(data.lunchText)}" placeholder="例如：三角飯糰">
+                <input
+                  type="text"
+                  data-date="${dateStr}"
+                  data-field="lunchText"
+                  value="${escapeAttr(data.lunchText)}"
+                  placeholder="例如：三角飯糰"
+                >
               </div>
 
               <div class="field">
                 <label>中餐熱量（kcal）</label>
-                <input type="number" inputmode="numeric" data-date="${dateStr}" data-field="lunchKcal" value="${escapeAttr(data.lunchKcal)}" placeholder="例如 260">
+                <input
+                  type="number"
+                  inputmode="numeric"
+                  data-date="${dateStr}"
+                  data-field="lunchKcal"
+                  value="${escapeAttr(data.lunchKcal)}"
+                  placeholder="例如 260"
+                >
               </div>
 
               <div class="field">
                 <label>晚餐吃了什麼</label>
-                <input type="text" data-date="${dateStr}" data-field="dinnerText" value="${escapeAttr(data.dinnerText)}" placeholder="例如：雞胸沙拉">
+                <input
+                  type="text"
+                  data-date="${dateStr}"
+                  data-field="dinnerText"
+                  value="${escapeAttr(data.dinnerText)}"
+                  placeholder="例如：雞胸沙拉"
+                >
               </div>
 
               <div class="field">
                 <label>晚餐熱量（kcal）</label>
-                <input type="number" inputmode="numeric" data-date="${dateStr}" data-field="dinnerKcal" value="${escapeAttr(data.dinnerKcal)}" placeholder="例如 420">
+                <input
+                  type="number"
+                  inputmode="numeric"
+                  data-date="${dateStr}"
+                  data-field="dinnerKcal"
+                  value="${escapeAttr(data.dinnerKcal)}"
+                  placeholder="例如 420"
+                >
               </div>
 
               <div class="field">
                 <label>其他 / 點心（選填）</label>
-                <input type="text" data-date="${dateStr}" data-field="otherText" value="${escapeAttr(data.otherText)}" placeholder="例如：水果、咖啡">
+                <input
+                  type="text"
+                  data-date="${dateStr}"
+                  data-field="otherText"
+                  value="${escapeAttr(data.otherText)}"
+                  placeholder="例如：水果、咖啡"
+                >
               </div>
 
               <div class="field">
                 <label>其他熱量（kcal）</label>
-                <input type="number" inputmode="numeric" data-date="${dateStr}" data-field="otherKcal" value="${escapeAttr(data.otherKcal)}" placeholder="例如 120">
+                <input
+                  type="number"
+                  inputmode="numeric"
+                  data-date="${dateStr}"
+                  data-field="otherKcal"
+                  value="${escapeAttr(data.otherKcal)}"
+                  placeholder="例如 120"
+                >
               </div>
 
               <label class="check-item">
@@ -974,19 +1028,23 @@
       }
 
       const rootRef = ref(db, `shares/${shareId}/dailyResetRecords`);
-      unsubscribeFn = onValue(rootRef, (snapshot) => {
-        const incoming = snapshot.val() || {};
-        recordsStore = { ...recordsStore, ...incoming };
+      unsubscribeFn = onValue(
+        rootRef,
+        (snapshot) => {
+          const incoming = snapshot.val() || {};
+          recordsStore = { ...recordsStore, ...incoming };
 
-        if (suppressRenderWhileTyping) {
-          pendingRemoteRender = true;
-          return;
+          if (suppressRenderWhileTyping) {
+            pendingRemoteRender = true;
+            return;
+          }
+
+          renderCards();
+        },
+        (error) => {
+          console.error("讀取資料失敗：", error);
         }
-
-        renderCards();
-      }, (error) => {
-        console.error("讀取資料失敗：", error);
-      });
+      );
     }
 
     function handleCheckboxChange(target) {
