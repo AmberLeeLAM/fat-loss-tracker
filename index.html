@@ -15,6 +15,7 @@
       --success:#40b884;
       --warning:#ffb84d;
       --shadow:0 8px 24px rgba(232,138,167,0.12);
+      --line:#f3d6e1;
     }
 
     * { box-sizing: border-box; }
@@ -28,7 +29,7 @@
     }
 
     .app{
-      max-width:760px;
+      max-width:820px;
       margin:0 auto;
     }
 
@@ -45,16 +46,9 @@
     }
 
     .hero h1{
-      margin:0 0 8px;
-      font-size:26px;
-      color:#c94f79;
-    }
-
-    .hero p{
       margin:0;
-      color:#7d6170;
-      line-height:1.6;
-      font-size:14px;
+      font-size:28px;
+      color:#c94f79;
     }
 
     .quick-summary{
@@ -65,7 +59,7 @@
     }
 
     .summary-box{
-      background:rgba(255,255,255,0.82);
+      background:rgba(255,255,255,0.88);
       border:1px solid #f0d3dd;
       border-radius:16px;
       padding:10px;
@@ -84,15 +78,83 @@
       color:#c94f79;
     }
 
-    .status{
-      margin-top:12px;
-      padding:10px 12px;
-      border-radius:14px;
-      font-size:13px;
-      line-height:1.5;
+    .picker-wrap{
+      margin-top:14px;
+      background:rgba(255,255,255,0.82);
+      border:1px solid #f0d3dd;
+      border-radius:18px;
+      padding:12px;
+    }
+
+    .picker-top{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:10px;
+    }
+
+    .picker-title{
+      font-size:14px;
+      font-weight:700;
+      color:#6b4d59;
+    }
+
+    .picker-actions{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .btn{
+      border:none;
       background:#fff;
-      border:1px solid #f1dae3;
-      color:#734f5f;
+      color:#c94f79;
+      border:1px solid #f0cbd8;
+      border-radius:999px;
+      padding:9px 14px;
+      font-weight:700;
+      cursor:pointer;
+      font-size:13px;
+    }
+
+    .btn:hover{
+      background:#fff5f8;
+    }
+
+    .btn.primary{
+      background:#c94f79;
+      color:#fff;
+      border-color:#c94f79;
+    }
+
+    .btn.primary:hover{
+      background:#b9436d;
+    }
+
+    .date-picker{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+
+    .date-chip{
+      border:1px solid #efc9d7;
+      border-radius:999px;
+      padding:8px 12px;
+      cursor:pointer;
+      background:#fff;
+      color:#7b5564;
+      font-size:13px;
+      user-select:none;
+      transition:0.2s ease;
+    }
+
+    .date-chip.active{
+      background:#c94f79;
+      color:#fff;
+      border-color:#c94f79;
     }
 
     .day-card{
@@ -288,25 +350,21 @@
       background:linear-gradient(90deg,#f59ab7 0%,#df6f97 100%);
     }
 
-    .card-footer{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:10px;
-      margin-top:14px;
-      flex-wrap:wrap;
-    }
-
-    .save-hint{
-      font-size:12px;
-      color:#8a7080;
-    }
-
     .small-note{
       color:#8b7180;
       font-size:12px;
       line-height:1.5;
       margin-top:8px;
+    }
+
+    .empty-state{
+      background:#fff;
+      border:1px dashed #efcad8;
+      border-radius:18px;
+      padding:22px;
+      text-align:center;
+      color:#8b7180;
+      box-shadow:var(--shadow);
     }
 
     @media (max-width:640px){
@@ -318,6 +376,9 @@
         grid-template-columns:1fr;
       }
       .date-title{ font-size:18px; }
+      .picker-top{
+        align-items:flex-start;
+      }
     }
   </style>
 </head>
@@ -325,7 +386,6 @@
   <div class="app">
     <div class="hero">
       <h1>🌸 Amber Daily Reset</h1>
-      <p>6/9 ～ 7/1 減脂同步版｜不用登入，只要同一個網址就會同步。</p>
 
       <div class="quick-summary">
         <div class="summary-box">
@@ -342,7 +402,17 @@
         </div>
       </div>
 
-      <div class="status" id="statusBox">正在同步到雲端…</div>
+      <div class="picker-wrap">
+        <div class="picker-top">
+          <div class="picker-title">選擇日期（可複選）</div>
+          <div class="picker-actions">
+            <button class="btn" id="selectTodayBtn" type="button">只看今天</button>
+            <button class="btn" id="selectAllBtn" type="button">全選</button>
+            <button class="btn" id="clearDatesBtn" type="button">清除選取</button>
+          </div>
+        </div>
+        <div class="date-picker" id="datePicker"></div>
+      </div>
     </div>
 
     <div id="container"></div>
@@ -354,8 +424,7 @@
       getDatabase,
       ref,
       set,
-      onValue,
-      remove
+      onValue
     } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-database.js";
 
     const firebaseConfig = {
@@ -385,18 +454,40 @@
 
     const startDate = new Date("2026-06-09");
     const endDate = new Date("2026-07-01");
-    const weekdayMap = ["日","一","二","三","四","五","六"];
     const todayStr = new Date().toISOString().split("T")[0];
+    const weekdayMap = ["日","一","二","三","四","五","六"];
 
     let recordsStore = {};
     let unsubscribeFn = null;
     const saveTimers = {};
 
     const container = document.getElementById("container");
-    const statusBox = document.getElementById("statusBox");
+    const datePicker = document.getElementById("datePicker");
     const todayCompletionEl = document.getElementById("todayCompletion");
     const todayIntakeEl = document.getElementById("todayIntake");
     const todayNetEl = document.getElementById("todayNet");
+
+    const selectTodayBtn = document.getElementById("selectTodayBtn");
+    const selectAllBtn = document.getElementById("selectAllBtn");
+    const clearDatesBtn = document.getElementById("clearDatesBtn");
+
+    const allDates = [];
+    {
+      let d = new Date(startDate);
+      while (d <= endDate) {
+        allDates.push(d.toISOString().split("T")[0]);
+        d.setDate(d.getDate() + 1);
+      }
+    }
+
+    const selectedDates = new Set(
+      allDates.includes(todayStr) ? [todayStr] : [allDates[0]]
+    );
+
+    function formatDateShort(dateStr) {
+      const d = new Date(dateStr);
+      return `${d.getMonth() + 1}/${d.getDate()}`;
+    }
 
     function getSchedule(day) {
       switch(day) {
@@ -531,13 +622,44 @@
       todayNetEl.textContent = `${calcNet(todayData)}`;
     }
 
+    function renderDatePicker() {
+      datePicker.innerHTML = "";
+      allDates.forEach(dateStr => {
+        const chip = document.createElement("button");
+        chip.type = "button";
+        chip.className = "date-chip" + (selectedDates.has(dateStr) ? " active" : "");
+        chip.textContent = formatDateShort(dateStr);
+        chip.addEventListener("click", () => {
+          if (selectedDates.has(dateStr)) {
+            selectedDates.delete(dateStr);
+          } else {
+            selectedDates.add(dateStr);
+          }
+
+          if (selectedDates.size === 0) {
+            selectedDates.add(dateStr);
+          }
+
+          renderDatePicker();
+          renderCards();
+        });
+        datePicker.appendChild(chip);
+      });
+    }
+
     function renderCards() {
       container.innerHTML = "";
-      let current = new Date(startDate);
 
-      while (current <= endDate) {
-        const dateStr = current.toISOString().split("T")[0];
-        const day = current.getDay();
+      const datesToShow = allDates.filter(d => selectedDates.has(d));
+
+      if (datesToShow.length === 0) {
+        container.innerHTML = '<div class="empty-state">請先選擇日期</div>';
+        updateTodaySummary();
+        return;
+      }
+
+      datesToShow.forEach(dateStr => {
+        const day = new Date(dateStr).getDay();
         const weekday = weekdayMap[day];
         const schedule = getSchedule(day);
         const data = getDateData(dateStr);
@@ -715,18 +837,12 @@
                   <div class="progress-bar" id="progress-${dateStr}" style="width:${completion.percent}%"></div>
                 </div>
               </div>
-
-              <div class="card-footer">
-                <div class="save-hint">☁️ 自動同步到雲端</div>
-                <button class="btn" data-reset="${dateStr}">清空這一天</button>
-              </div>
             </div>
           </div>
         `;
 
         container.appendChild(card);
-        current.setDate(current.getDate() + 1);
-      }
+      });
 
       updateTodaySummary();
     }
@@ -766,12 +882,9 @@
       clearTimeout(saveTimers[dateStr]);
       saveTimers[dateStr] = setTimeout(async () => {
         try {
-          statusBox.textContent = "正在同步到雲端…";
           await saveDateRecord(dateStr);
-          statusBox.textContent = "✅ 已同步";
         } catch (error) {
           console.error(error);
-          statusBox.textContent = "❌ 同步失敗，請檢查 Database Rules";
         }
       }, 300);
     }
@@ -783,19 +896,10 @@
       }
 
       const rootRef = ref(db, `shares/${shareId}/dailyResetRecords`);
-      unsubscribeFn = onValue(
-        rootRef,
-        (snapshot) => {
-          const data = snapshot.val() || {};
-          recordsStore = data;
-          renderCards();
-          statusBox.textContent = "✅ 已從雲端載入";
-        },
-        (error) => {
-          console.error(error);
-          statusBox.textContent = "❌ 無法讀取資料，請檢查 Database Rules";
-        }
-      );
+      unsubscribeFn = onValue(rootRef, (snapshot) => {
+        recordsStore = snapshot.val() || {};
+        renderCards();
+      });
     }
 
     function handleFieldUpdate(el) {
@@ -815,18 +919,30 @@
       scheduleSave(dateStr);
     }
 
-    async function resetDate(dateStr) {
-      try {
-        const dateRef = ref(db, `shares/${shareId}/dailyResetRecords/${dateStr}`);
-        await remove(dateRef);
-        delete recordsStore[dateStr];
-        renderCards();
-        statusBox.textContent = `✅ 已清空 ${dateStr}`;
-      } catch (error) {
-        console.error(error);
-        statusBox.textContent = "❌ 清空失敗";
+    selectTodayBtn.addEventListener("click", () => {
+      selectedDates.clear();
+      if (allDates.includes(todayStr)) {
+        selectedDates.add(todayStr);
+      } else {
+        selectedDates.add(allDates[0]);
       }
-    }
+      renderDatePicker();
+      renderCards();
+    });
+
+    selectAllBtn.addEventListener("click", () => {
+      selectedDates.clear();
+      allDates.forEach(d => selectedDates.add(d));
+      renderDatePicker();
+      renderCards();
+    });
+
+    clearDatesBtn.addEventListener("click", () => {
+      selectedDates.clear();
+      selectedDates.add(allDates[0]);
+      renderDatePicker();
+      renderCards();
+    });
 
     document.addEventListener("input", (e) => {
       const target = e.target;
@@ -842,15 +958,7 @@
       }
     });
 
-    document.addEventListener("click", (e) => {
-      const btn = e.target.closest("[data-reset]");
-      if (!btn) return;
-      const dateStr = btn.dataset.reset;
-      if (confirm(`要清空 ${dateStr} 的記錄嗎？`)) {
-        resetDate(dateStr);
-      }
-    });
-
+    renderDatePicker();
     renderCards();
     subscribeToRecords();
   </script>
