@@ -16,7 +16,11 @@
     border-radius: 12px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
   }
-  h2 { margin-bottom: 10px; }
+  input[type="text"] {
+    width: 90%;
+    padding: 5px;
+    margin: 5px 0;
+  }
 </style>
 </head>
 
@@ -29,15 +33,15 @@
 <script>
 const startDate = new Date("2026-06-09");
 const endDate = new Date("2026-07-01");
- 
+
 function getSchedule(day) {
   switch(day) {
-    case 1: return "18:30-19:30 運動"; // Mon
-    case 2: return "12:30-13:30 運動"; // Tue
-    case 3: return "插花課｜休息"; // Wed
+    case 1: return "18:30-19:30 運動";
+    case 2: return "12:30-13:30 運動";
+    case 3: return "插花課｜休息";
     case 4: return "運動（12:30 或 18:30）";
     case 5: return "休息 / 散步";
-    case 6: return "休息";
+    case 6:
     case 0: return "休息";
   }
 }
@@ -54,36 +58,31 @@ while (current <= endDate) {
 
     <p>📅 今日安排：${getSchedule(day)}</p>
 
-    ✅ Daily Reset
-    <br>
-    ☐ 09:00 喝水 500cc<br>
-    ☐ 12:00-13:00 喝水 500cc<br>
-    ☐ 14:00-16:00 喝水 500cc<br>
-    ☐ 16:00-19:00 喝水 500cc<br><br>
+    <b>✅ Daily Reset</b><br>
+    <label><input type="checkbox"> 09:00 喝水 500cc</label><br>
+    <label><input type="checkbox"> 12:00-13:00 喝水 500cc</label><br>
+    <label><input type="checkbox"> 14:00-16:00 喝水 500cc</label><br>
+    <label><input type="checkbox"> 16:00-19:00 喝水 500cc</label><br><br>
 
-    ☐ 今天有運動：
-    <br>
-    ☐ 重訓（臀腿）
-    ☐ 重訓（上半身）
-    ☐ 爬坡機
-    ☐ 步行 >5000
-    <br>
-    消耗：______ kcal
-    <br><br>
+    <b>🏋️ 運動</b><br>
+    <label><input type="checkbox"> 重訓（臀腿）</label>
+    <label><input type="checkbox"> 重訓（上半身）</label>
+    <label><input type="checkbox"> 爬坡機</label>
+    <label><input type="checkbox"> 步行 >5000</label><br>
+    消耗：<input type="text" placeholder="kcal"><br><br>
 
-    ☐ 運動後喝 Protein Drink<br>
-    ☐ 沒有吃宵夜<br><br>
+    <label><input type="checkbox"> 運動後喝 Protein Drink</label><br>
+    <label><input type="checkbox"> 今天沒有吃宵夜</label><br><br>
 
-    🍱 飲食紀錄<br>
-    中餐：__________<br>
-    晚餐：__________<br>
+    <b>🍱 飲食紀錄</b><br>
+    中餐：<input type="text" placeholder="今天吃了什麼"><br>
+    晚餐：<input type="text" placeholder="今天吃了什麼"><br>
 
     <p>🔥 Keep Going</p>
   </div>
   `;
 
   document.getElementById("container").innerHTML += card;
-
   current.setDate(current.getDate() + 1);
 }
 </script>
