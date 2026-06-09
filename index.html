@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<title>🌸 Amber Fat Loss Plan 🌸</title>
+<style>
+  body {
+    font-family: Arial;
+    background: #f6f6f6;
+    padding: 20px;
+  }
+  .card {
+    background: white;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  }
+  h2 { margin-bottom: 10px; }
+</style>
+</head>
+
+<body>
+
+<h1>🌸 Amber’s Daily Reset 🌸</h1>
+
+<div id="container"></div>
+
+<script>
+const startDate = new Date("2026-06-09");
+const endDate = new Date("2026-07-01");
+
+function getSchedule(day) {
+  switch(day) {
+    case 1: return "18:30-19:30 運動"; // Mon
+    case 2: return "12:30-13:30 運動"; // Tue
+    case 3: return "插花課｜休息"; // Wed
+    case 4: return "運動（12:30 或 18:30）";
+    case 5: return "休息 / 散步";
+    case 6: return "休息";
+    case 0: return "休息";
+  }
+}
+
+let current = new Date(startDate);
+
+while (current <= endDate) {
+  let day = current.getDay();
+  let dateStr = current.toISOString().split("T")[0];
+
+  let card = `
+  <div class="card">
+    <h2>${dateStr}（${["日","一","二","三","四","五","六"][day]}）</h2>
+
+    <p>📅 今日安排：${getSchedule(day)}</p>
+
+    ✅ Daily Reset
+    <br>
+    ☐ 09:00 喝水 500cc<br>
+    ☐ 12:00-13:00 喝水 500cc<br>
+    ☐ 14:00-16:00 喝水 500cc<br>
+    ☐ 16:00-19:00 喝水 500cc<br><br>
+
+    ☐ 今天有運動：
+    <br>
+    ☐ 重訓（臀腿）
+    ☐ 重訓（上半身）
+    ☐ 爬坡機
+    ☐ 步行 >5000
+    <br>
+    消耗：______ kcal
+    <br><br>
+
+    ☐ 運動後喝 Protein Drink<br>
+    ☐ 沒有吃宵夜<br><br>
+
+    🍱 飲食紀錄<br>
+    中餐：__________<br>
+    晚餐：__________<br>
+
+    <p>🔥 Keep Going</p>
+  </div>
+  `;
+
+  document.getElementById("container").innerHTML += card;
+
+  current.setDate(current.getDate() + 1);
+}
+</script>
+
+</body>
+</html>
