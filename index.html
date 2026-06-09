@@ -845,6 +845,41 @@
         resetDate(dateStr);
       }
     });
-  </script>
+ 
+</script>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
+  import {
+    getAuth,
+    GoogleAuthProvider,
+    signInWithPopup,
+    signOut,
+    onAuthStateChanged
+  } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
+
+  import {
+    getFirestore,
+    doc,
+    setDoc,
+    getDoc
+  } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBBoo-Ql8khcGZjFniI_99kzrxE3pG5f3k",
+    authDomain: "daily-reset-a833e.firebaseapp.com",
+    projectId: "daily-reset-a833e",
+    storageBucket: "daily-reset-a833e.firebasestorage.app",
+    messagingSenderId: "678511296062",
+    appId: "1:678511296062:web:064e7b526cab48ba7ddb6f"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  console.log("✅ Firebase OK");
+</script>
+
 </body>
 </html>
